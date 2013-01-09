@@ -1,10 +1,11 @@
 /*
  * cjpeg.c
  *
+ * This file was part of the Independent JPEG Group's software:
  * Copyright (C) 1991-1998, Thomas G. Lane.
- * Modified 2003-2008 by Guido Vollbeding.
+ * Modified 2003-2011 by Guido Vollbeding.
+ * Modifications:
  * Copyright (C) 2010, D. R. Commander.
- * This file is part of the Independent JPEG Group's software.
  * For conditions of distribution and use, see the accompanying README file.
  *
  * This file contains a command-line user interface for the JPEG compressor.
@@ -154,6 +155,7 @@ usage (void)
   fprintf(stderr, "Switches (names may be abbreviated):\n");
   fprintf(stderr, "  -quality N[,...]   Compression quality (0..100; 5-95 is useful range)\n");
   fprintf(stderr, "  -grayscale     Create monochrome JPEG file\n");
+  fprintf(stderr, "  -rgb           Create RGB JPEG file\n");
 #ifdef ENTROPY_OPT_SUPPORTED
   fprintf(stderr, "  -optimize      Optimize Huffman table (smaller file, but slow compression)\n");
 #endif
@@ -164,6 +166,9 @@ usage (void)
   fprintf(stderr, "  -targa         Input file is Targa format (usually not needed)\n");
 #endif
   fprintf(stderr, "Switches for advanced users:\n");
+#ifdef C_ARITH_CODING_SUPPORTED
+  fprintf(stderr, "  -arithmetic    Use arithmetic coding\n");
+#endif
 #ifdef DCT_ISLOW_SUPPORTED
   fprintf(stderr, "  -dct int       Use integer DCT method%s\n",
 	  (JDCT_DEFAULT == JDCT_ISLOW ? " (default)" : ""));
@@ -184,9 +189,6 @@ usage (void)
   fprintf(stderr, "  -outfile name  Specify name for output file\n");
   fprintf(stderr, "  -verbose  or  -debug   Emit debug output\n");
   fprintf(stderr, "Switches for wizards:\n");
-#ifdef C_ARITH_CODING_SUPPORTED
-  fprintf(stderr, "  -arithmetic    Use arithmetic coding\n");
-#endif
   fprintf(stderr, "  -baseline      Force baseline quantization tables\n");
   fprintf(stderr, "  -qtables file  Use quantization tables given in file\n");
   fprintf(stderr, "  -qslots N[,...]    Set component quantization tables\n");
@@ -277,9 +279,9 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
       if (! printed_version) {
 	fprintf(stderr, "%s version %s (build %s)\n",
 		PACKAGE_NAME, VERSION, BUILD);
-	fprintf(stderr, "%s\n\n", LJTCOPYRIGHT);
-	fprintf(stderr, "Based on Independent JPEG Group's libjpeg, version %s\n%s\n\n",
-		JVERSION, JCOPYRIGHT);
+	fprintf(stderr, "%s\n\n", JCOPYRIGHT);
+	fprintf(stderr, "Emulating The Independent JPEG Group's libjpeg, version %s\n\n",
+		JVERSION);
 	printed_version = TRUE;
       }
       cinfo->err->trace_level++;
@@ -287,6 +289,10 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
     } else if (keymatch(arg, "grayscale", 2) || keymatch(arg, "greyscale",2)) {
       /* Force a monochrome JPEG file to be generated. */
       jpeg_set_colorspace(cinfo, JCS_GRAYSCALE);
+
+    } else if (keymatch(arg, "rgb", 3)) {
+      /* Force an RGB JPEG file to be generated. */
+      jpeg_set_colorspace(cinfo, JCS_RGB);
 
     } else if (keymatch(arg, "maxmemory", 3)) {
       /* Maximum memory in Kb (or Mb with 'm'). */

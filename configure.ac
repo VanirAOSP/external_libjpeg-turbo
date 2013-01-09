@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.56])
-AC_INIT([libjpeg-turbo], [1.2.0])
+AC_INIT([libjpeg-turbo], [1.2.90])
 BUILD=`date +%Y%m%d`
 
 AM_INIT_AUTOMAKE([-Wall foreign dist-bzip2])
@@ -366,8 +366,9 @@ AC_CONFIG_FILES([pkgscripts/makemacpkg:release/makemacpkg.in])
 AC_CONFIG_FILES([pkgscripts/Description.plist:release/Description.plist.in])
 AC_CONFIG_FILES([pkgscripts/Info.plist:release/Info.plist.in])
 AC_CONFIG_FILES([pkgscripts/uninstall:release/uninstall.in])
-AC_CONFIG_FILES([pkgscripts/makesunpkg:release/makesunpkg.in])
-AC_CONFIG_FILES([pkgscripts/pkginfo:release/pkginfo.in])
+AC_CONFIG_FILES([tjbenchtest])
+AC_CONFIG_FILES([tjbenchtest.java])
+AC_CONFIG_FILES([tjexampletest])
 AC_CONFIG_FILES([libjpeg.map])
 AC_CONFIG_FILES([Makefile simd/Makefile])
 AC_CONFIG_FILES([java/Makefile])
